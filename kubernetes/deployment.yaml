@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: secret-demo
+  name: secret-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: secret-demo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: secret-demo
+    spec:
+      containers:
+      - image: secret-demo:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+        name: app
+        env:
+          - name: DEBUG
+            value: 'true'
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          initialDelaySeconds: 5
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+        volumeMounts:
+          - name: database
+            mountPath: /workspace/config
+            readOnly: true
+      volumes:
+        - name: database
+          secret:
+            secretName: mysql

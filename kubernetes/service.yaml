@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: secret-demo
+  name: secret-demo
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: secret-demo
+  sessionAffinity: None
+  type: ClusterIP

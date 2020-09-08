@@ -1,0 +1,25 @@
+apiVersion: skaffold/v2beta6
+kind: Config
+metadata:
+  name: secret-demo
+build:
+  tagPolicy:
+    sha256: {}
+  artifacts:
+  - image: secret-demo
+    custom:
+      buildCommand: ./mvnw spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=$IMAGE
+      dependencies:
+        paths:
+          - src
+          - pom.xml
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes/deployment.yaml
+    - kubernetes/service.yaml
+portForward:
+  - resourceType: service
+    resourceName: secret-demo
+    port: 80
+    localPort: 8080
